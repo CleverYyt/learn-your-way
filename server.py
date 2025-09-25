@@ -145,7 +145,7 @@ def gemini_query(payload):
 
 
 def get_json_data(markdown):
-    url = "http://sea-dify.chengjiukehu.com/v1/workflows/run"
+    url = "http://10.43.99.144/v1/workflows/run"
     headers = {
         "Authorization": "Bearer app-9RXicDUqcFSUSVUjzP6W1sql",
         "Content-Type": "application/json"
