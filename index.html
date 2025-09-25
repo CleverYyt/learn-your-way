@@ -1,0 +1,70 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Course Content</title>
+    <link rel="stylesheet" href="learnyourway.withgoogle.com/fonts.googleapis.com/css.css">
+    <link rel="stylesheet" href="learnyourway.withgoogle.com/fonts.googleapis.com/css2-0d334ef97ae26.css">
+    <link rel="stylesheet" href="learnyourway.withgoogle.com/fonts.googleapis.com/css2.css">
+    <link rel="stylesheet" href="learnyourway.withgoogle.com/fonts.googleapis.com/icon.css">
+    <!-- <link rel="stylesheet" href="learnyourway.withgoogle.com/learnyourway.withgoogle.com/material-theme.css"> -->
+    <!-- <link rel="stylesheet" href="learnyourway.withgoogle.com/learnyourway.withgoogle.com/global_styles.css"> -->
+    <link rel="stylesheet" href="style.css">
+</head>
+
+<body>
+    <div class="content-container">
+        <header class="transformation-page-header">
+            <div class="transformation-page-header-title">
+                <h2 id="course-title">Learn Your Way</h2>
+            </div>
+            <div class="transformation-page-header-actions">
+                <!-- Icons like email and info can go here -->
+
+                <button class="upload-button" id="upload-button"><img
+                        src="learnyourway.withgoogle.com/learnyourway.withgoogle.com/static/pdf.svg" />
+                    Upload PDF</button>
+            </div>
+        </header>
+        <div class="transformation-page-root">
+            <div class="view-toolbar">
+                <button class="source-button"><img
+                        src="learnyourway.withgoogle.com/learnyourway.withgoogle.com/static/pdf.svg" />
+                    Source</button>
+                <button class="view-tool-button active"><img
+                        src="learnyourway.withgoogle.com/learnyourway.withgoogle.com/static/immersive-text-icon.svg" />
+                    Immersive Text</button>
+            </div>
+
+            <input type="file" id="file-input" accept=".pdf" style="display: none;" />
+
+            <div id="upload-status" class="upload-status" style="display: none;">
+                <span id="status-text">上传中...</span>
+            </div>
+
+
+
+            <div class="main-container">
+                <nav id="sidebar">
+
+                    <ul id="nav-list"></ul>
+                </nav>
+
+                <main id="content">
+                    <!-- Chapter content will be displayed here -->
+                </main>
+
+                <aside id="quiz-sidebar">
+                    <!-- Quiz content will be injected here -->
+                </aside>
+            </div>
+        </div>
+    </div>
+
+    <script src="marked.min.js"></script>
+    <script src="app.js"></script>
+</body>
+
+</html>
