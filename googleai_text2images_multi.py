@@ -15,7 +15,7 @@ def process_content(index, content, prompt_template, url, headers):
         print(f"第 {index+1} 条内容：正在生成个性化提示词...")
         
         # gemini-2.5-flash-preview模型的API配置
-        preview_url = 'http://ai-flow-internal.tal.com/v1/chat/completions'
+        preview_url = 'http://ai-service-test.tal.com/openai-compatible/v1/chat/completions'
         preview_headers = {
             'Authorization': 'Bearer 300000182:ed2cf372e844d7699079de387e1b830f',
             'Content-Type': 'application/json'
@@ -239,7 +239,7 @@ def json2json(original_data):
     generated_image_urls = [None] * len(contents)  # 预分配空间
     
     # 设置API参数
-    url = "http://ai-service.tal.com/openai-compatible/v1/chat/completions"
+    url = "http://ai-service-test.tal.com/openai-compatible/v1/chat/completions"
     headers = {
         "api-key": "300000298:ddd56d685698ec7a93e459762b9f7c1e",
         "Content-Type": "application/json"
