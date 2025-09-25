@@ -3,6 +3,8 @@ import json
 import time
 import requests
 
+from server import upload_to_blob, gemini_query, markdown_polish_payload
+
 
 def get_json_data(markdown):
     url = "http://sea-dify.chengjiukehu.com/v1/workflows/run"
@@ -60,9 +62,15 @@ def generate_signature(app_id, secret, nonce=None, timestamp=None):
 
 
 if __name__ == "__main__":
-    with open("/Users/tal/Desktop/learn you way/uploads/markdown/a295f644-d239-4545-909e-455d90c91d66_learnyourway_demo3.md", "r") as f:
-        markdown = f.read()
-    print(markdown)
-    json_data = get_json_data(markdown)
+    # with open("/Users/tal/Desktop/learn you way/uploads/markdown/a295f644-d239-4545-909e-455d90c91d66_learnyourway_demo3.md", "r") as f:
+    #     markdown = f.read()
+    # print(markdown)
+    # json_data = get_json_data(markdown)
+    # print(upload_to_blob("output.md", "test1.pdf"))
+    with open("output.md", 'rb') as f:
+        markdown = str(f.read())
 
-    print(json_data)
+    markdown = gemini_query(markdown_polish_payload(markdown))
+    print(markdown)
+    with open(f"test_markdown.md", 'w', encoding='utf-8') as f:
+        f.write(markdown)

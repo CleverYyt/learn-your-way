@@ -7,14 +7,33 @@ from pathlib import Path
 import time
 
 import requests
+from fontTools.unicodedata import block
+from markdown import markdown
 
 from googleai_text2images_multi import json2json
+from pdf_2_markdown import pdf_to_markdown
 
-pdf_to_markdown_prompt = """Convert the PDF provided by the user to Markdown 
+markdown_polish_prmpt = """
+You are a Markdown Formatting Specialist. Your sole purpose is to reformat and beautify the provided Markdown text. You act like an automated code linter or beautifier, but for Markdown.
+Your actions are governed by two unbreakable Golden Rules:
+Golden Rule #1: ABSOLUTE CONTENT INTEGRITY
+- You are strictly forbidden to modify, rephrase, add, or delete any of the original words or sentences. The text content must remain 100% identical.
+Golden Rule #2: COMPLETE IMAGE PRESERVATION
+- You must preserve all image tags (![alt text](url)) in their original position. The alt text and the URL must remain completely unchanged.
+Your formatting tasks are limited to the following checklist. You must apply these rules while strictly obeying the two Golden Rules above:
+1.Heading Consistency: Apply a logical hierarchy of headings (#, ##, ###).
+2.Spacing and Readability: Ensure proper blank lines between paragraphs, around lists, headings, code blocks, and images for clarity.
+3.List Formatting: Unify list styles (e.g., all use -) and correct indentation for nested lists.
+4.Emphasis Correction: Fix broken bold (**text**) and italic (*text*) tags without adding new emphasis.
+5.Code Blocks: Properly format inline `code` and fenced ``` code blocks.
+6.Blockquotes and Rules: Correctly format blockquotes (>) and horizontal rules (---).
+Your final output should be only the cleaned, well-formatted Markdown text, and nothing else.
 
-1.Maintain the original text structure, headings, and lists.
-2.When encountering images, do not describe the content of the images.
-3.Insert a placeholder strictly in the order of appearance where each image should be, using the format [IMAGE_PLACEHOLDER_X], where X is the sequence number of the image in the document (starting from 1). For example, the first image should be [IMAGE_PLACEHOLDER_1], the second image [IMAGE_PLACEHOLDER_2], and so on.
+"""
+
+
+pdf_to_markdown_prompt = """
+
 """
 
 
@@ -59,6 +78,21 @@ def upload_to_blob(file_path, file_name):
         return blob_url
 
 
+def markdown_polish_payload(markdown):
+    return {
+        "model": "gemini-2.5-pro",
+        "messages": [
+            {
+                "role": "system",
+                "content": markdown_polish_prmpt,
+            },
+            {
+                "role": "user",
+                "content": markdown
+            }
+        ]
+    }
+
 def get_pdf_payload(pdf_url) :
     return {
         "model": "gemini-2.5-pro",
@@ -84,7 +118,7 @@ def get_pdf_payload(pdf_url) :
 
 def gemini_query(payload):
     print("调用gemini开始")
-    url = 'http://ai-flow-internal.tal.com/v1/chat/completions'
+    url = 'http://ai-service-test.tal.com/openai-compatible/v1/chat/completions'
 
     headers = {
         'Authorization': 'Bearer 300000182:ed2cf372e844d7699079de387e1b830f',
@@ -217,24 +251,30 @@ class CustomHandler(http.server.SimpleHTTPRequestHandler):
 
             step_start = time.time()  # 更新步骤开始时间
 
+            # 保存 markdown 文件
+            file_prefix = os.path.splitext(os.path.basename(filename))[0]
+            md_filename = file_prefix + ".md"
+            md_filepath = "uploads/origin_markdown/origin_" + md_filename
             # 生成 markdown
-            markdown = gemini_query(get_pdf_payload(blob_url))
+            pdf_to_markdown(blob_url, md_filepath)
+
+            with open(md_filepath, "r") as f:
+                file_data = f.read()
+
+            markdown_content = gemini_query(markdown_polish_payload(file_data))
             print(f"Step: Generated markdown. Time taken: {time.time() - step_start:.2f} seconds")
 
             step_start = time.time()  # 更新步骤开始时间
 
-            # 保存 markdown 文件
-            file_prefix = os.path.splitext(os.path.basename(filename))[0]
-            md_filename = file_prefix + ".md"
-
             with open(f"uploads/markdown/{md_filename}", 'w', encoding='utf-8') as f:
-                f.write(markdown)
+                f.write(markdown_content)
+
             print(f"Step: Saved markdown file. Time taken: {time.time() - step_start:.2f} seconds")
 
             step_start = time.time()  # 更新步骤开始时间
 
             # 生成 JSON 数据
-            json_data = get_json_data(markdown)
+            json_data = get_json_data(markdown_content)
             print(f"Step: Generated JSON data. Time taken: {time.time() - step_start:.2f} seconds")
 
             step_start = time.time()  # 更新步骤开始时间
