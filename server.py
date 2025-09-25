@@ -7,8 +7,6 @@ from pathlib import Path
 import time
 
 import requests
-from fontTools.unicodedata import block
-from markdown import markdown
 
 from googleai_text2images_multi import json2json
 from pdf_2_markdown import pdf_to_markdown
