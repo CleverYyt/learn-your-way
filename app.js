@@ -21,7 +21,7 @@ document.addEventListener('DOMContentLoaded', () => {
             li.dataset.chapterIndex = index;
             li.innerHTML = `
                 <div class="nav-item-radio"></div>
-                <a class="nav-link" href="#">${chapter.chapter_title}</a>
+                <a class="nav-link">${chapter.chapter_title}</a>
             `;
             navList.appendChild(li);
         });
