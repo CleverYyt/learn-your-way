@@ -90,9 +90,9 @@ document.addEventListener('DOMContentLoaded', () => {
                 const row = document.createElement('div');
                 row.className = 'ke-row';
                 row.style.display = 'flex';
-                row.style.alignItems = 'flex-start';
+                row.style.alignItems = 'center';
                 row.style.gap = '20px';
-                
+
                 const textDiv = document.createElement('div');
                 textDiv.className = 'ke-text';
                 textDiv.style.flex = '1';
@@ -103,8 +103,8 @@ document.addEventListener('DOMContentLoaded', () => {
                     const imageDiv = document.createElement('div');
                     imageDiv.className = 'ke-image';
                     imageDiv.style.flexShrink = '0';
-                    imageDiv.style.width = '200px';
-                    imageDiv.style.height = '150px';
+                    imageDiv.style.width = '300px';
+                    imageDiv.style.height = '400px';
                     
                     const img = document.createElement('img');
                     img.src = p.image;
@@ -298,12 +298,12 @@ document.addEventListener('DOMContentLoaded', () => {
         
         // 检查文件类型
         if (!file.name.toLowerCase().endsWith('.pdf')) {
-            showStatus('只支持PDF文件', 'error');
+            showStatus('Only PDF files are supported', 'error');
             return;
         }
         
         // 显示上传状态
-        showStatus('上传中...', 'uploading');
+        showStatus('Working on your upload...', 'uploading');
         
         try {
             const formData = new FormData();
@@ -317,27 +317,19 @@ document.addEventListener('DOMContentLoaded', () => {
             if (response.ok) {
                 const result = await response.json();
                 if (result.status === 'success') {
-                    showStatus('上传完成，正在处理...', 'processing');
-                    
-                    // 等待一段时间后显示处理完成
-                    setTimeout(() => {
-                        showStatus('处理完成！', 'success');
-                        
-                        // 3秒后刷新页面
-                        setTimeout(() => {
-                            window.location.reload();
-                        }, 3000);
-                    }, 2000);
+                    showStatus('upload success', 'processing');
+
+                    location.replace(location.pathname + '?t=' + Date.now());
                 } else {
-                    showStatus(result.message || '处理失败', 'error');
+                    showStatus(result.message || 'upload failed', 'error');
                 }
             } else {
                 const errorResult = await response.json();
-                showStatus(errorResult.message || '上传失败', 'error');
+                showStatus(errorResult.message || 'upload failed', 'error');
             }
         } catch (error) {
             console.error('Upload error:', error);
-            showStatus('上传失败：网络错误', 'error');
+            showStatus('upload failed：network error', 'error');
         }
         
         // 清空文件输入
