@@ -170,7 +170,7 @@ class CustomHandler(http.server.SimpleHTTPRequestHandler):
             self.handle_upload()
         else:
             self.send_error(404)
-    
+
     def handle_upload(self):
         try:
             # 解析multipart/form-data
@@ -178,37 +178,37 @@ class CustomHandler(http.server.SimpleHTTPRequestHandler):
             if not content_type.startswith('multipart/form-data'):
                 self.send_error(400, "Expected multipart/form-data")
                 return
-            
+
             # 获取boundary
             boundary = content_type.split('boundary=')[1]
-            
+
             # 读取请求体
             content_length = int(self.headers['Content-Length'])
             post_data = self.rfile.read(content_length)
-            
+
             # 解析文件数据
             file_data, filename = self.parse_multipart_data(post_data, boundary)
-            
+
             if not file_data or not filename:
                 self.send_error(400, "No file uploaded")
                 return
-            
+
             # 检查文件类型
             if not filename.lower().endswith('.pdf'):
                 self.send_error(400, "Only PDF files are allowed")
                 return
-            
+
             # 生成唯一文件名
             unique_filename = f"{uuid.uuid4()}_{filename}"
             file_path = os.path.join(UPLOADS_DIR, unique_filename)
-            
+
             # 保存文件
             with open(file_path, 'wb') as f:
                 f.write(file_data)
-            
+
             # 处理文件
             self.process_uploaded_file(file_path, unique_filename)
-            
+
         except Exception as e:
             print(f"Upload error: {e}")
             self.send_error(500, f"Upload failed: {str(e)}")
@@ -328,14 +328,14 @@ class CustomHandler(http.server.SimpleHTTPRequestHandler):
             }
 
             self.wfile.write(json.dumps(response).encode())
-    
+
     def end_headers(self):
         # 添加CORS头
         self.send_header('Access-Control-Allow-Origin', '*')
         self.send_header('Access-Control-Allow-Methods', 'GET, POST, OPTIONS')
         self.send_header('Access-Control-Allow-Headers', 'Content-Type')
         super().end_headers()
-    
+
     def do_OPTIONS(self):
         self.send_response(200)
         self.send_header('Access-Control-Allow-Origin', '*')
@@ -343,10 +343,21 @@ class CustomHandler(http.server.SimpleHTTPRequestHandler):
         self.send_header('Access-Control-Allow-Headers', 'Content-Type')
         self.end_headers()
 
+class ThreadedHTTPServer(socketserver.ThreadingTCPServer):
+    # 允许服务器重用地址，防止"Address already in use"错误
+    allow_reuse_address = True
+    # 设置线程守护模式，这样服务器关闭时线程也会自动关闭
+    daemon_threads = True
+
 if __name__ == "__main__":
-    with socketserver.TCPServer(("", PORT), CustomHandler) as httpd:
+    with ThreadedHTTPServer(("", PORT), CustomHandler) as httpd:
         print(f"Serving at http://localhost:{PORT}")
-        httpd.serve_forever()
+        print(f"Server is running with concurrency support (ThreadingTCPServer)")
+        try:
+            httpd.serve_forever()
+        except KeyboardInterrupt:
+            print("\nShutting down server...")
+            httpd.server_close()
 
 
 
