@@ -205,7 +205,31 @@ document.addEventListener('DOMContentLoaded', () => {
             const check = (isCorrect) => {
                 this.feedbackContainer.style.display = 'block';
                 this.feedbackContainer.className = `quiz-feedback ${isCorrect ? 'correct' : 'incorrect'}`;
-                this.feedbackContainer.textContent = isCorrect ? 'Correct!' : `Incorrect. The correct answer is: ${question.correct_answer}`;
+                // this.feedbackContainer.textContent = isCorrect ? 'Correct!' : `Incorrect. The correct answer is: ${question.correct_answer}`;
+                
+                // 为选择题和判断题添加颜色反馈
+                if (question.type === 'mcq' || question.type === 'tf') {
+                    // 找到所有选项按钮
+                    const optionButtons = this.questionContainer.querySelectorAll('.quiz-option-btn');
+                    
+                    optionButtons.forEach(btn => {
+                        // 如果是正确答案，添加绿色样式
+                        if (btn.textContent === question.correct_answer) {
+                            btn.style.backgroundColor = '#C5E6C7';
+                            // btn.style.color = 'white';
+                            btn.style.color = '#333';
+
+                            btn.style.border = '2px solid #C5E6C7';
+                        }
+                        // 如果是用户选择的错误答案，添加红色样式
+                        else if (selectedOption && btn === selectedOption && !isCorrect) {
+                            btn.style.backgroundColor = '#ffd6cc';
+                            btn.style.color = '#333';
+                            btn.style.border = '2px solid #ffd6cc';
+                        }
+                    });
+                }
+                
                 this.questionContainer.querySelectorAll('button, input, textarea').forEach(el => el.disabled = true);
                 this.actionsContainer.innerHTML = '';
             };
